@@ -1,6 +1,9 @@
 # main.py
+import sys
+
 from evolution import evolve_sorting_network
 from coevolution import coevolve
+from compare_experiments import main as run_comparison_cli
 from evaluation import correctness_ratio
 from network import run_network
 
@@ -40,12 +43,33 @@ def run_coevolution():
     print("Sample input: ", sample)
     print("Sample output:", run_network(best, sample))
 
+def run_compare():
+    print("\n[Comparison] Running default 80-run benchmark (CSV only).")
+    print("Configuration: n_wires=6,8 | trials=20 each method | output=compare_results_80runs.csv")
+
+    original_argv = sys.argv[:]
+    try:
+        sys.argv = [
+            "compare_experiments.py",
+            "--n-wires-list",
+            "6,8",
+            "--trials",
+            "20",
+            "--csv",
+            "compare_results_80runs.csv",
+        ]
+        run_comparison_cli()
+    finally:
+        sys.argv = original_argv
+
 if __name__ == "__main__":
-    mode = input("Enter mode (baseline / coevolution): ").strip().lower()
+    mode = input("Enter mode (baseline / coevolution / compare): ").strip().lower()
 
     if mode == "baseline":
         run_baseline()
     elif mode == "coevolution":
         run_coevolution()
+    elif mode == "compare":
+        run_compare()
     else:
         print("Unknown mode")
