@@ -35,6 +35,7 @@ def mutate(network: Network, n_wires: int, mutation_rate: float = 0.2) -> Networ
 
     return child
 
+
 def evolve_sorting_network(
     n_wires: int = 6,
     population_size: int = 100,
@@ -47,6 +48,8 @@ def evolve_sorting_network(
 
     best = None
     best_fit = float("-inf")
+    best_correctness = 0.0
+    best_length = float("inf")
     success_generation = None
 
     for gen in range(generations):
@@ -56,33 +59,50 @@ def evolve_sorting_network(
         gen_best = population[gen_best_idx]
         gen_best_fit = fitnesses[gen_best_idx]
 
-        if gen_best_fit > best_fit:
-            best = gen_best.copy()
-            best_fit = gen_best_fit
+        # Track best-ever network by:
+        # 1) higher correctness
+        # 2) shorter length
+        # 3) higher fitness as tie-breaker
+        for idx, net in enumerate(population):
+            net_correctness = correctness_ratio(net, n_wires)
+            net_length = len(net)
+            net_fit = fitnesses[idx]
 
-        acc = correctness_ratio(gen_best, n_wires)
+            if success_generation is None and net_correctness == 1.0:
+                success_generation = gen
+
+            better = False
+            if best is None:
+                better = True
+            elif net_correctness > best_correctness:
+                better = True
+            elif net_correctness == best_correctness and net_length < best_length:
+                better = True
+            elif (
+                net_correctness == best_correctness
+                and net_length == best_length
+                and net_fit > best_fit
+            ):
+                better = True
+
+            if better:
+                best = net.copy()
+                best_correctness = net_correctness
+                best_length = net_length
+                best_fit = net_fit
+
+        gen_best_acc = correctness_ratio(gen_best, n_wires)
+
         if verbose:
             print(
-                f"Gen {gen:03d} | best fitness={gen_best_fit:.4f} | "
-                f"correctness={acc:.4f} | length={len(gen_best)}"
+                f"Gen {gen:03d} | "
+                f"best fitness={gen_best_fit:.4f} | "
+                f"gen-best correctness={gen_best_acc:.4f} | "
+                f"best-so-far correctness={best_correctness:.4f} | "
+                f"best-so-far length={best_length}"
             )
 
-        if acc == 1.0:
-            success_generation = gen
-            if verbose:
-                print("Found valid sorting network.")
-            if return_stats:
-                return gen_best, {
-                    "success": True,
-                    "ever_found_perfect": True,
-                    "success_generation": success_generation,
-                    "best_fitness": gen_best_fit,
-                    "final_correctness": acc,
-                    "best_length": len(gen_best),
-                    "generations_ran": gen + 1,
-                }
-            return gen_best
-
+        # evolve next generation
         new_population = [gen_best.copy()]  # elitism
 
         while len(new_population) < population_size:
@@ -94,9 +114,10 @@ def evolve_sorting_network(
 
         population = new_population
 
-    final_correctness = correctness_ratio(best, n_wires) if best is not None else 0.0
+    final_correctness = best_correctness if best is not None else 0.0
     success = final_correctness == 1.0
     ever_found_perfect = success_generation is not None
+
     if return_stats:
         return best, {
             "success": success,
@@ -104,7 +125,8 @@ def evolve_sorting_network(
             "success_generation": success_generation,
             "best_fitness": best_fit,
             "final_correctness": final_correctness,
-            "best_length": len(best) if best is not None else 0,
+            "best_length": int(best_length) if best is not None else 0,
             "generations_ran": generations,
         }
+
     return best
