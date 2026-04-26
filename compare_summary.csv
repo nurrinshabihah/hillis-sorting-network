@@ -1,5 +1,0 @@
-n_wires,method,trials,success_rate,ever_found_perfect_rate,correctness_mean,correctness_median,correctness_stdev,length_mean,length_median,length_stdev,runtime_mean_seconds,runtime_median_seconds,success_generation_mean,success_generation_median
-6,baseline,20,0.95,0.95,0.9984,1.0,0.0068,18.45,18.0,2.73,1.3886,0.2965,26.58,8.0
-6,coevolution,20,1.0,1.0,1.0,1.0,0.0,16.55,16.0,1.02,10.3526,10.2315,1.8,2.0
-8,baseline,20,0.1,0.1,0.9627,0.9609,0.0186,25.5,25.5,2.75,50.5812,54.3719,81.0,81.0
-8,coevolution,20,1.0,1.0,1.0,1.0,0.0,40.05,40.0,2.84,34.3793,33.7451,5.8,6.0
