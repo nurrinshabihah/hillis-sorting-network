@@ -13,7 +13,7 @@ def run_baseline():
         n_wires=n_wires,
         population_size=80,
         initial_length=14,
-        generations=300
+        generations=200
     )
 
     print("\n[Baseline] Best network:")
@@ -45,7 +45,7 @@ def run_coevolution():
 
 def run_compare():
     print("\n[Comparison] Running default 80-run benchmark (CSV only).")
-    print("Configuration: n_wires=6,8 | trials=20 each method | output=compare_results_80runs.csv")
+    print("Configuration: n_wires=6,8 | trials=20 each method | output=compare_results_fixed.csv")
 
     original_argv = sys.argv[:]
     try:
@@ -56,7 +56,11 @@ def run_compare():
             "--trials",
             "20",
             "--csv",
-            "compare_results_80runs.csv",
+            "compare_results_fixed.csv",
+            "--summary-csv",
+            "compare_summary_fixed.csv",
+            "--summary-md",
+            "compare_summary_fixed.md",
         ]
         run_comparison_cli()
     finally:
