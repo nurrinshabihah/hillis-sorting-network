@@ -146,15 +146,15 @@ def maybe_write_csv(path: str, rows: List[Dict[str, Any]]) -> None:
         return
 
     fieldnames = [
-        "method",
-        "n_wires",
-        "run_id",
-        "found_valid",
-        "generation_found",
-        "final_correctness",
-        "final_length",
-        "time_seconds",
-    ]
+    "method",
+    "n_wires",
+    "run_id",
+    "found_valid",
+    "generation_found",
+    "final_correctness",
+    "best_length",
+    "time_seconds",
+]
 
     normalized_rows: List[Dict[str, Any]] = []
     for row in rows:
@@ -166,7 +166,7 @@ def maybe_write_csv(path: str, rows: List[Dict[str, Any]]) -> None:
                 "found_valid": bool(row.get("success")),
                 "generation_found": row.get("success_generation"),
                 "final_correctness": row.get("final_correctness"),
-                "final_length": row.get("best_length"),
+                "best_length": row.get("best_length"),
                 "time_seconds": row.get("runtime_seconds"),
             }
         )
