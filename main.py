@@ -5,6 +5,7 @@ from evaluation import correctness_ratio
 from network import run_network
 
 def run_baseline():
+    """Run the baseline evolutionary algorithm and print results."""
     n_wires = 6
     best = evolve_sorting_network(
         n_wires=n_wires,
@@ -22,6 +23,7 @@ def run_baseline():
     print("Sample output:", run_network(best, sample))
 
 def run_coevolution():
+    """Run the co-evolutionary algorithm and print results."""
     n_wires = 6
     best = coevolve(
         n_wires=n_wires,
