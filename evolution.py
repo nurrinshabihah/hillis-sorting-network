@@ -66,7 +66,7 @@ def evolve_sorting_network(
     population_size: int = 100,
     initial_length: int = 12,
     generations: int = 200
-) -> Network:
+):
     """
     Run the baseline evolutionary algorithm to evolve a sorting network.
 

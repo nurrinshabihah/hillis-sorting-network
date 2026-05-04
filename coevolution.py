@@ -101,7 +101,7 @@ def coevolve(
     initial_network_length: int = 14,
     parasite_size: int = 10,
     generations: int = 20
-) -> Network:
+):
     """
     Run the co-evolutionary algorithm for the given number of generations.
 
