@@ -1,68 +1,116 @@
 # Evolutionary and Co-evolutionary Search for Small Sorting Networks
 
-This project implements baseline evolutionary and Hillis-inspired co-evolutionary algorithms for evolving small sorting networks. The aim is to investigate whether co-evolving difficult test cases can improve the search for correct sorting networks compared with a standard evolutionary approach.
+This project implements a baseline evolutionary algorithm and a Hillis-style co-evolutionary algorithm for evolving small sorting networks.
 
-## Project Overview
+The goal is to compare the two approaches on small fixed-size sorting problems in terms of:
 
-A sorting network is a fixed sequence of compare-and-swap operations used to sort inputs of a fixed size. In this project, candidate sorting networks are evolved automatically using an evolutionary algorithm.
+* correctness
+* convergence behaviour
+* network size
+* runtime
+
+## Overview
+
+A sorting network is a fixed sequence of compare-and-swap operations for sorting inputs of a fixed size.
 
 Two approaches are implemented:
 
-1. **Baseline evolution**
-   A population of sorting networks is evolved using tournament selection, one-point crossover, and three-form mutation (replacement, insertion, deletion).
+* **Baseline evolution**
+  Evolves a population of sorting networks using tournament selection, crossover, and mutation.
 
-2. **Coevolution**
-   Sorting networks (hosts) are evolved together with a second population of adversarial test cases (parasites). Hosts are rewarded for sorting correctly, while parasites are rewarded for exposing host failures. This is based on the approach introduced by Hillis (1990).
+* **Coevolution**
+  Evolves sorting networks (**hosts**) together with adversarial binary test sets (**parasites**). Hosts are rewarded for sorting correctly, while parasites are rewarded for exposing failures.
+
+## Experimental Setup
+
+The main comparison uses:
+
+* **Problem sizes:** `n = 6` and `n = 8` wires
+* **Trials:** 20 runs per method per problem size
+* **Total runs:** 80
+* **Baseline:** population size 80, 200 generations
+* **Coevolution:** host population 60, parasite population 40, 200 generations
+* **Initial network length:** 14 comparators
+
+Final solutions are validated exhaustively on all `2^n` binary inputs.
 
 ## Requirements
 
-- Python 3.8 or later
-- No external dependencies — the standard library only
+### Core code
 
-## Files
+* Python 3.8+
+* standard library only
 
-| File | Description |
-|---|---|
-| `network.py` | Sorting network representation, comparator simulation, and random generation |
-| `evaluation.py` | Binary input generation, correctness checking, and fitness computation |
-| `evolution.py` | Baseline evolutionary algorithm |
-| `coevolution.py` | Parasite population management and co-evolutionary algorithm |
-| `main.py` | Entry point with command-line argument handling |
-| `utils.py` | Shared utilities: seeding, mean, median, standard deviation |
-| `test_coevolution.py` | Unit tests for core co-evolutionary functions |
+### Plotting
 
-## How It Works
+For plotting scripts, install:
 
-A sorting network is represented as a list of comparator pairs. Each comparator `(i, j)` compares the values at positions `i` and `j` and swaps them if they are out of order:
-
-```python
-[(0, 1), (2, 3), (1, 3)]
+```bash
+pip install pandas matplotlib
 ```
-
-Correctness is evaluated using the zero-one principle: a network that correctly sorts all binary inputs of length `n` is guaranteed to correctly sort all inputs of length `n`. This allows exhaustive validation using only `2^n` test cases.
 
 ## Running the Code
 
-Run the baseline evolutionary algorithm on 6 wires with seed 42:
+Run:
 
 ```bash
-python main.py --mode baseline --wires 6 --seed 42
+python main.py
 ```
 
-Run the co-evolutionary algorithm on 8 wires with seed 7:
+Then choose one of:
+
+* `baseline`
+* `coevolution`
+* `compare`
+
+### Modes
+
+* `baseline`
+  Runs one baseline search on 6 wires.
+
+* `coevolution`
+  Runs one co-evolutionary search on 6 wires.
+
+* `compare`
+  Runs the full benchmark for:
+
+  * baseline and coevolution
+  * 6 and 8 wires
+  * 20 trials each
+
+## Output
+
+### Per-run CSV
+
+Contains one row per run, including:
+
+* `method`
+* `n_wires`
+* `run_id`
+* `found_valid`
+* `generation_found`
+* `final_correctness`
+* `best_length`
+* `time_seconds`
+
+### Summary CSV
+
+Contains aggregated results for each method and wire count.
+
+
+## Plotting
 
 ```bash
-python main.py --mode coevolution --wires 8 --seed 7
+python plot_results.py
 ```
 
-## Running Tests
 
-```bash
-python test_coevolution.py
-```
+## Notes
 
-This runs unit tests for random parasite generation, host fitness, parasite fitness, and mutation.
+This is a simplified adaptation of Hillis (1990), not a direct reproduction. It keeps the host–parasite idea, but uses a simpler direct encoding and standard evolutionary operators.
+
+
 
 ## Reference
 
-Hillis, W.D. (1990). Co-evolving parasites improve simulated evolution as an optimization procedure. *Physica D: Nonlinear Phenomena*, 42(1-3), pp. 228-234.
+Hillis, W. D. (1990). *Co-evolving parasites improve simulated evolution as an optimization procedure*. Physica D: Nonlinear Phenomena, 42(1–3), 228–234.
